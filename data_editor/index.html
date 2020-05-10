@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://unpkg.com/vue"></script>
+</head>
+<body>
+  <div id="app">
+    <div>{{person.firstName}}</div>
+    <div>{{person.lastName}}</div>
+    <div>{{person.age}}</div>
+    <data-editor
+      label="Person"
+      v-model="person">
+    </data-editor>
+  </div>
+
+  <template id="data-editor">
+    <div>
+      <button @click="openModal">Edit Person</button>
+      <dialog ref="edit">
+        <label>
+          {{ label }}
+          <input v-model="internalPerson.firstName">
+          <input v-model="internalPerson.lastName">
+          <input v-model="internalPerson.age">
+          <button @click="updatePerson()">Save</button>
+          <button @click="closeModal()">Cancel</button>
+        </label>
+    </dialog>
+    </div>
+  </template>
+
+  <script>
+    Vue.component('data-editor', {
+      template: '#data-editor',
+      inheritAttrs: false,
+      props: ['label', 'value'],
+      data() {
+        return {
+          internalPerson: {
+            firstName: this.value.firstName,
+            lastName: this.value.lastName,
+            age: this.value.age,
+          }
+        }
+      },
+      methods: {
+        updatePerson() {
+          this.$emit('input', { ...this.internalPerson });
+          this.closeModal();
+        },
+        openModal() {
+          this.$refs.edit.showModal();
+        },
+        closeModal() {
+          this.$refs.edit.close();
+        }
+      }
+    })
+  </script>
+  <script>
+    new Vue({
+      el: '#app',
+      data() {
+        return {
+          person: {
+            firstName: 'John',
+            lastName: 'Doe',
+            age: 42
+          }
+        }
+      }
+    })
+  </script>
+</body>
+</html>
